@@ -8,7 +8,7 @@ Below is a high-level architecture diagram for the Wanderlust project, using lin
 
 -----
 
-```mermaid
+
 graph LR
     Client[Client (Browser)]
     Server[Express Server (app.js)]
@@ -26,7 +26,7 @@ graph LR
     Models ---|CRUD| Database
     Views ---|EJS Templates| Client
     StaticAssets ---|CSS/JS| Client
-```
+
 
 -----
 
