@@ -2,38 +2,35 @@
 
 Below is a high-level architecture diagram for the Wanderlust project, illustrating the main components and their interactions.
 
----
+
+
+Below is a high-level architecture diagram for the Wanderlust project, using lines and boxes to illustrate the main components and their interactions.
+
+-----
 
 ```mermaid
-graph TD
-    A[Client (Browser)]
-    B[Express Server (app.js)]
-    C[Models]
-    D[Views]
-    E[Utils]
-    F[Database]
-    G[Static Assets]
+graph LR
+    Client[Client (Browser)]
+    Server[Express Server (app.js)]
+    Models[Models]
+    Views[Views]
+    Utils[Utils]
+    Database[Database]
+    StaticAssets[Static Assets]
 
-    A -->|Requests| B
-    B -->|Renders| D
-    B -->|Uses| C
-    B -->|Uses| E
-    B -->|Serves| G
-    C -->|CRUD| F
-    D -->|EJS Templates| A
-    G -->|CSS/JS| A
+    Client ---|Requests| Server
+    Server ---|Renders| Views
+    Server ---|Uses| Models
+    Server ---|Uses| Utils
+    Server ---|Serves| StaticAssets
+    Models ---|CRUD| Database
+    Views ---|EJS Templates| Client
+    StaticAssets ---|CSS/JS| Client
 ```
 
----
+-----
 
 ## Components
-- **Client (Browser):** Sends requests and receives rendered pages and static assets.
-- **Express Server (app.js):** Handles routing, middleware, and business logic.
-- **Models:** Mongoose schemas for listings and reviews, interact with the database.
-- **Views:** EJS templates for rendering pages.
-- **Utils:** Utility functions for error handling and async operations.
-- **Database:** Stores listings and reviews.
-- **Static Assets:** CSS and JS files served to the client.
 
 ## Flow
 1. Client sends a request to the server.
@@ -42,6 +39,5 @@ graph TD
 4. Data is fetched/stored in the database via models.
 5. Client receives the response (HTML, CSS, JS).
 
----
 
 *This diagram is generated using Mermaid.js. For editing, copy the code block above into a Mermaid editor.*
