@@ -50,7 +50,7 @@ body{
     align-items:space-evenly;
  }
 
- .card{
+ .listing-card{
     border: none !important;
     width: 100% !important;
     object-fit: cover !important;

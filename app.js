@@ -1,4 +1,5 @@
 const express = require("express");
+
 const app = express();
 const mongoose = require("mongoose");
 const Listing = require("./models/listing.js");
@@ -9,6 +10,9 @@ const wrapAsync= require("./utils/wrapAsync.js");
 const ExpressError= require("./utils/ExpressError.js")
 const {listingSchema, reviewSchema}= require("./schema.js");
 const Review = require("./models/review.js");
+
+// Move method-override to the very top before any routes
+
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -27,8 +31,20 @@ app.engine("ejs", ejsMate);
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 
+
 app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride("_method"));
+// app.use(methodOverride("_method"));
+app.use(methodOverride(function (req, res) {
+  if (req.body && typeof req.body === 'object' && '_method' in req.body) {
+    let method = req.body._method;
+    delete req.body._method;
+    return method;
+  }
+}));
+
+app.use(express.json()); 
+
+
 
 // Static files
 app.use(express.static(path.join(__dirname, "public")));
@@ -53,13 +69,24 @@ const validateListing = (req, res, next) => {
     }
 };
 
-const validateReview=(req, res, next)=>{
-     let error= reviewSchema.validate(req.body);
+// const validateReview = (req, res, next) => {
+//     // Validate review as an object with 'review' key
+//     const { error } = reviewSchema.validate({ review: req.body.review });
 
-    if(error){
-        let errMsg= error.details.map((el)=> el.message).join(",");
+//     if (error) {
+//         let errMsg = error.details.map((el) => el.message).join(",");
+//         throw new ExpressError(400, errMsg);
+//     } else {
+//         next();
+//     }
+// };
+const validateReview = (req, res, next) => {
+    const { error } = reviewSchema.validate(req.body);
+
+    if (error) {
+        let errMsg = error.details.map((el) => el.message).join(",");
         throw new ExpressError(400, errMsg);
-    }else{
+    } else {
         next();
     }
 };
@@ -181,7 +208,14 @@ app.post("/listings/:id/reviews",validateReview,wrapAsync(async(req,res)=>{
 
  res.redirect(`/listings/${listing._id}`);
 }));
-
+//  reviews - DELETE ROUTE
+    app.delete("/listings/:id/reviews/:reviewId", wrapAsync(async(req,res)=>{
+    console.log("DELETE ROUTE HIT");
+    let {id, reviewId}= req.params;
+    await Listing.findByIdAndUpdate(id, {$pull: {reviews: reviewId}});
+    await Review.findByIdAndDelete(reviewId);
+    res.redirect(`/listings/${id}`);
+}));
 
 
 // ------------------ SERVER -------------------------
